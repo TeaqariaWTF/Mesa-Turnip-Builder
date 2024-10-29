@@ -125,26 +125,37 @@ mkdir -p "$meta"
 
 # Create update-binary
 cat <<EOF >"$meta/update-binary"
+#!/sbin/sh
+
 #################
 # Initialization
 #################
+
 umask 022
+
 # echo before loading util_functions
 ui_print() { echo "\$1"; }
+
 require_new_magisk() {
   ui_print "*******************************"
-  ui_print " Please install Magisk v20.4+! "
+  ui_print " Please install Magisk v25.2+! "
   ui_print "*******************************"
   exit 1
 }
+
 #########################
 # Load util_functions.sh
 #########################
+
 OUTFD=\$2
 ZIPFILE=\$3
+
+mount /data 2>/dev/null
+
 [ -f /data/adb/magisk/util_functions.sh ] || require_new_magisk
 . /data/adb/magisk/util_functions.sh
-[ \$MAGISK_VER_CODE -lt 20400 ] && require_new_magisk
+[ \$MAGISK_VER_CODE -lt 25200 ] && require_new_magisk
+
 install_module
 exit 0
 EOF
@@ -152,6 +163,16 @@ EOF
 # Create updater-script
 cat <<EOF >"$meta/updater-script"
 #MAGISK
+EOF
+
+cat <<EOF >"uninstall.sh"
+find /data/user_de/*/*/*cache/* -iname "*shader*" -exec rm -rf {} +
+find /data/data/* -iname "*shader*" -exec rm -rf {} +
+find /data/data/* -iname "*graphitecache*" -exec rm -rf {} +
+find /data/data/* -iname "*gpucache*" -exec rm -rf {} +
+find /data_mirror/data*/*/*/*/* -iname "*shader*" -exec rm -rf {} +
+find /data_mirror/data*/*/*/*/* -iname "*graphitecache*" -exec rm -rf {} +
+find /data_mirror/data*/*/*/*/* -iname "*gpucache*" -exec rm -rf {} +
 EOF
 
 cat <<EOF >"module.prop"
@@ -202,7 +223,9 @@ find /data/data/* -iname "*gpucache*" -exec rm -rf {} +
 find /data_mirror/data*/*/*/*/* -iname "*shader*" -exec rm -rf {} +
 find /data_mirror/data*/*/*/*/* -iname "*graphitecache*" -exec rm -rf {} +
 find /data_mirror/data*/*/*/*/* -iname "*gpucache*" -exec rm -rf {} +
-ui_print "- Done."
+
+ui_print ""
+ui_print "- Gpu Cache Cleared ..."
 ui_print ""
 
 ui_print "Driver installed Successfully"
