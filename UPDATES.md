@@ -7,3 +7,5 @@
 2: Built using FullLTO + O2 + no-semantic-interposition
 
 3: Added Uninstall script and minor Improvements
+
+4: Updated minimum Magisk version to v25.0
