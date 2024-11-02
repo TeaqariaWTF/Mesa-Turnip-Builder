@@ -1,4 +1,4 @@
-**October 30 , 2024** : Updated Mesa version to 24.2.5
+**November 03 , 2024** : Updated Mesa version to 24.2.6
 
 **Requires Android 13 and above to work properly**
 
