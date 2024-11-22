@@ -1,6 +1,8 @@
-**November 15 , 2024** : Updated Mesa version to 24.2.7
+**November 22 , 2024** : Updated Mesa version to 24.3.0
 
 **Requires Android 13 and above to work properly**
+
+**Tons of bugs fixes and Improvements in Mesa 24.3.0
 
 1: Updated Android NDK to 27c Stable LTS
 
