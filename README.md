@@ -12,7 +12,9 @@ Simple Bash script that aims to build a turnip driver for **MAGISK/KERNELSU or E
 
 Simply clone this repo and use **BASH** to build 
 
-`` bash build-turnip.sh `` 
+``` 
+bash build-turnip.sh
+``` 
 
 Check [Notes](//github.com/v3kt0r-87/Mesa-Turnip-Builder?tab=readme-ov-file#notes-) Section below for more info 
 
