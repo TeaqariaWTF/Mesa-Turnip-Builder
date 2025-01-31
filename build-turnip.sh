@@ -74,20 +74,40 @@ echo "Extracting Mesa source..." $'\n'
 unzip "$mesadir".zip &> /dev/null
 cd $mesadir
 
-clear
-
-# Create Meson cross file for Android
-echo "Creating Meson cross file..." $'\n'
+# Set NDK Clang bin directory
 ndk_bin="$workdir/$ndkdir/toolchains/llvm/prebuilt/linux-x86_64/bin"
-cat <<EOF >"android-aarch64"
+
+# Set toolchain variables
+export CC=clang
+export CXX=clang++
+export AR=llvm-ar
+export RANLIB=llvm-ranlib
+export STRIP=llvm-strip
+export OBJDUMP=llvm-objdump
+export OBJCOPY=llvm-objcopy
+export LDFLAGS="-fuse-ld=lld"
+
+# Create a temporary directory for fake cc/c++
+mkdir -p /tmp/fake-cc
+
+# Create symbolic links to NDK-Clang
+ln -sf "$ndk_bin/clang" /tmp/fake-cc/cc
+ln -sf "$ndk_bin/clang++" /tmp/fake-cc/c++
+
+# Prepend both fake-cc and NDK bin to PATH
+export PATH="/tmp/fake-cc:$ndk_bin:$PATH"
+
+echo "Creating Meson cross file..." $'\n'
+cat <<EOF >"android-aarch64.txt"
 [binaries]
 ar = '$ndk_bin/llvm-ar'
 c = ['ccache', '$ndk_bin/aarch64-linux-android33-clang']
-cpp = ['ccache', '$ndk_bin/aarch64-linux-android33-clang++', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++']
-c_ld = 'lld'
-cpp_ld = 'lld'
+cpp = ['ccache', '$ndk_bin/aarch64-linux-android33-clang++', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++', '-Wno-error=c++11-narrowing']
+c_ld = '$ndk_bin/ld.lld'
+cpp_ld = '$ndk_bin/ld.lld'
 strip = '$ndk_bin/aarch64-linux-android-strip'
 pkg-config = ['env', 'PKG_CONFIG_LIBDIR=NDKDIR/pkg-config', '/usr/bin/pkg-config']
+
 [host_machine]
 system = 'android'
 cpu_family = 'aarch64'
@@ -95,9 +115,33 @@ cpu = 'armv8'
 endian = 'little'
 EOF
 
-# Generate build files using Meson
+cat <<EOF >"native.txt"
+[build_machine]
+c = ['ccache', 'clang']
+cpp = ['ccache', 'clang++']
+ar = 'llvm-ar'
+strip = 'llvm-strip'
+c_ld = 'ld.lld'
+cpp_ld = 'ld.lld'
+system = 'linux'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
+EOF
+
 echo "Generating build files..." $'\n'
-meson setup build-android-aarch64 --cross-file "$workdir"/"$mesadir"/android-aarch64 -Dbuildtype=release -Dplatforms=android -Dplatform-sdk-version=33 -Dandroid-stub=true -Dgallium-drivers= -Dvulkan-drivers=freedreno -Dfreedreno-kmds=kgsl -Db_lto=true -Dstrip=true &> "$workdir"/meson_log
+CC=clang CXX=clang++ meson setup build-android-aarch64 \
+    --cross-file "$workdir/$mesadir/android-aarch64.txt" \
+    --native-file "$workdir/$mesadir/native.txt" \
+    -Dbuildtype=release \
+    -Dplatforms=android \
+    -Dplatform-sdk-version=33 \
+    -Dandroid-stub=true \
+    -Dgallium-drivers= \
+    -Dvulkan-drivers=freedreno \
+    -Dfreedreno-kmds=kgsl \
+    -Db_lto=true \
+    -Dstrip=true &> $workdir/meson_log
 
 # Compile build files using Ninja
 echo "Compiling build files..." $'\n'
@@ -106,6 +150,8 @@ ninja -C build-android-aarch64 &> "$workdir"/ninja_log
 echo "Using patchelf to match .so name..." $'\n'
 cp "$workdir"/"$mesadir"/build-android-aarch64/src/freedreno/vulkan/libvulkan_freedreno.so "$workdir"
 cd "$workdir"
+
+
 
 if ! [ -a libvulkan_freedreno.so ]; then
     echo -e "$red Build failed! libvulkan_freedreno.so not found $nocolor" && exit 1
@@ -281,6 +327,11 @@ EOF
     echo $workdir/Turnip-24.3.4-EMULATOR.zip $'\n'
     echo -e "$green Build Finished :). $nocolor" $'\n'
 
-# Cleanup 
+    # Cleanup 
     rm "$DRIVER_FILE" "$META_FILE"
+    
+    # Clean up fake-cc directory and symbolic links on exit
+    rm -rf /tmp/fake-cc/cc
+    rm -rf /tmp/fake-cc/c++
+    rm -rf /tmp/fake-cc
 fi
