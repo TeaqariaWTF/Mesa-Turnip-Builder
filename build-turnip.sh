@@ -4,8 +4,8 @@
 deps="meson ninja patchelf unzip curl pip flex bison zip"
 
 # Android NDK and Mesa version
-ndkver="https://dl.google.com/android/repository/android-ndk-r27c-linux.zip"
-ndkdir="android-ndk-r27c"
+ndkver="https://dl.google.com/android/repository/android-ndk-r28-linux.zip"
+ndkdir="android-ndk-r28"
 
 mesaver="https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-24.3.4/mesa-mesa-24.3.4.zip"
 mesadir="mesa-mesa-24.3.4"
@@ -304,7 +304,7 @@ else
 {
   "schemaVersion": 1,
   "name": "Freedreno Turnip Driver v24.3.4",
-  "description": "Compiled using Android NDK 27c",
+  "description": "Compiled using Android NDK 28",
   "author": "v3kt0r-87",
   "packageVersion": "3",
   "vendor": "Mesa3D",
