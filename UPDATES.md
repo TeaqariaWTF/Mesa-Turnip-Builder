@@ -2,8 +2,8 @@
 
 **Requires Android 14 and above to work properly**  
 
-1. Updated Android NDK to 28.0 Stable LTS  
-2. Built using Full LTO + O2 + no-semantic-interposition  
+1. Updated Android NDK to 28.0 Stable 
+2. Built using Full LTO + O2
 3. Added uninstall script and minor improvements  
 4. Updated minimum Magisk version to v25.0  
 5. Now supports auto-updates via Magisk / KernelSU  
