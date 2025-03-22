@@ -37,7 +37,7 @@ Check [Notes](//github.com/v3kt0r-87/Mesa-Turnip-Builder?tab=readme-ov-file#note
 
 ### NOTES :
 
-### Important : Android 13 (SDK 33) is needed for Full Vulkan 1.3 support
+### Important : Android 14 (SDK 34) is needed for Full Vulkan 1.4 support
 
 ## Please use either Ubuntu / Debian based distro to build 
 ```Ubuntu 22.04.4 LTS or later```
