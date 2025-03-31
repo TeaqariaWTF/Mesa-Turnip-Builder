@@ -102,7 +102,7 @@ cat <<EOF >"android-aarch64.txt"
 [binaries]
 ar = '$ndk_bin/llvm-ar'
 c = ['ccache', '$ndk_bin/aarch64-linux-android34-clang']
-cpp = ['ccache', '$ndk_bin/aarch64-linux-android34-clang++', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++', '-Wno-error=c++11-narrowing']
+cpp = ['ccache', '$ndk_bin/aarch64-linux-android34-clang++', '--start-no-unused-arguments', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++', '--end-no-unused-arguments', '-Wno-error=c++11-narrowing']
 c_ld = '$ndk_bin/ld.lld'
 cpp_ld = '$ndk_bin/ld.lld'
 strip = '$ndk_bin/aarch64-linux-android-strip'
@@ -141,6 +141,7 @@ CC=clang CXX=clang++ meson setup build-android-aarch64 \
     -Dvulkan-drivers=freedreno \
     -Dfreedreno-kmds=kgsl \
     -Db_lto=true \
+    -Degl=disabled \
     -Dstrip=true &> $workdir/meson_log
 
 # Compile build files using Ninja
