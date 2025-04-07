@@ -7,8 +7,8 @@ deps="meson ninja patchelf unzip curl pip flex bison zip"
 ndkver="https://dl.google.com/android/repository/android-ndk-r28-linux.zip"
 ndkdir="android-ndk-r28"
 
-mesaver="https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-25.0.2/mesa-mesa-25.0.2.zip"
-mesadir="mesa-mesa-25.0.2"
+mesaver="https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-25.0.3/mesa-mesa-25.0.3.zip"
+mesadir="mesa-mesa-25.0.3"
 
 # Colors for terminal output
 green='\033[0;32m'
@@ -20,7 +20,7 @@ magiskdir="$workdir/turnip_module"
 
 DRIVER_FILE="vulkan.turnip.so"
 META_FILE="meta.json"
-ZIP_FILE="Turnip-25.0.2-EMULATOR.zip"
+ZIP_FILE="Turnip-25.0.3-EMULATOR.zip"
 
 clear
 
@@ -101,8 +101,8 @@ echo "Creating Meson cross file..." $'\n'
 cat <<EOF >"android-aarch64.txt"
 [binaries]
 ar = '$ndk_bin/llvm-ar'
-c = ['ccache', '$ndk_bin/aarch64-linux-android34-clang']
-cpp = ['ccache', '$ndk_bin/aarch64-linux-android34-clang++', '--start-no-unused-arguments', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++', '--end-no-unused-arguments', '-Wno-error=c++11-narrowing']
+c = ['ccache', '$ndk_bin/aarch64-linux-android33-clang']
+cpp = ['ccache', '$ndk_bin/aarch64-linux-android33-clang++', '--start-no-unused-arguments', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++', '--end-no-unused-arguments', '-Wno-error=c++11-narrowing']
 c_ld = '$ndk_bin/ld.lld'
 cpp_ld = '$ndk_bin/ld.lld'
 strip = '$ndk_bin/aarch64-linux-android-strip'
@@ -135,7 +135,7 @@ CC=clang CXX=clang++ meson setup build-android-aarch64 \
     --native-file "$workdir/$mesadir/native.txt" \
     -Dbuildtype=release \
     -Dplatforms=android \
-    -Dplatform-sdk-version=34 \
+    -Dplatform-sdk-version=33 \
     -Dandroid-stub=true \
     -Dgallium-drivers= \
     -Dvulkan-drivers=freedreno \
@@ -225,8 +225,8 @@ EOF
 cat <<EOF >"module.prop"
 id=turnip-mesa
 name=Freedreno Turnip Vulkan Driver
-version=v25.0.2
-versionCode=20250321
+version=v25.0.3
+versionCode=20250407
 author=V3KT0R-87
 description=Turnip is an open-source vulkan driver for devices with Adreno 6xx-7xx GPUs.
 updateJson=https://raw.githubusercontent.com/v3kt0r-87/Mesa-Turnip-Builder/refs/heads/stable/update.json
@@ -249,7 +249,7 @@ ui_print ""
 ui_print "Checking Device info ..."
 sleep 1.25
 
-[ \$(getprop ro.system.build.version.sdk) -lt 34 ] && echo "Android 14 is now required! Aborting ..." && abort
+[ \$(getprop ro.system.build.version.sdk) -lt 33 ] && echo "Android 13 is required! Aborting ..." && abort
 echo ""
 echo "Everything looks fine .... proceeding"
 ui_print ""
@@ -286,8 +286,8 @@ ui_print ""
 EOF
 
 echo "Packing driver files into Magisk/KSU module ..." $'\n'
-zip -r $workdir/Turnip-25.0.2-MAGISK-KSU.zip * &> /dev/null
-if ! [ -a $workdir/Turnip-25.0.2-MAGISK-KSU.zip ]; then
+zip -r $workdir/Turnip-25.0.3-MAGISK-KSU.zip * &> /dev/null
+if ! [ -a $workdir/Turnip-25.0.3-MAGISK-KSU.zip ]; then
     echo -e "$red-Packing failed!$nocolor" && exit 1
 else
     clear
@@ -304,12 +304,12 @@ else
  cat <<EOF > "$META_FILE"
 {
   "schemaVersion": 1,
-  "name": "Freedreno Turnip Driver v25.0.2",
+  "name": "Freedreno Turnip Driver v25.0.3",
   "description": "Compiled using Android NDK 28",
   "author": "v3kt0r-87",
   "packageVersion": "3",
   "vendor": "Mesa3D",
-  "driverVersion": "Vulkan 1.4.305",
+  "driverVersion": "Vulkan 1.4",
   "minApi": 33,
   "libraryName": "vulkan.turnip.so"
 }
@@ -324,8 +324,8 @@ EOF
     clear
 
     echo -e "$green-All done, you can take your drivers from here;$nocolor" $'\n'
-    echo $workdir/Turnip-25.0.2-MAGISK-KSU.zip $'\n'
-    echo $workdir/Turnip-25.0.2-EMULATOR.zip $'\n'
+    echo $workdir/Turnip-25.0.3-MAGISK-KSU.zip $'\n'
+    echo $workdir/Turnip-25.0.3-EMULATOR.zip $'\n'
     echo -e "$green Build Finished :). $nocolor" $'\n'
 
     # Cleanup 
