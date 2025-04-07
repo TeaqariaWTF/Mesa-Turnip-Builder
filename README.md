@@ -46,7 +46,7 @@ Check [Notes](//github.com/v3kt0r-87/Mesa-Turnip-Builder?tab=readme-ov-file#note
 
 **USE A VPN IF YOUR ISP THROTTLES YOUR SPEED**
 
-Make sure your Android version is ```14``` or above otherwise you wont be able to install 
+Make sure your Android version is ```13``` or above otherwise you wont be able to install 
 
 Make sure you have the latest **MAGISK / KERNELSU** before installing
 
