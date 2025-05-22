@@ -1,4 +1,4 @@
-**April ,25 2025**: Updated Mesa to v25.1.0-RC2  
+**May ,23 2025**: Updated Mesa to v25.1.1 Stable  
 
 **Requires Android 14 and above to work properly**  
 **Android 13 users can still install**

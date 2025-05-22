@@ -1,14 +1,14 @@
 #!/bin/bash -e
 
 # Required packages for building the turnip driver
-deps="meson ninja patchelf unzip curl pip flex bison zip"
+deps="meson ninja patchelf unzip curl pip flex bison zip glslang glslangValidator"
 
 # Android NDK and Mesa version
 ndkver="https://dl.google.com/android/repository/android-ndk-r28b-linux.zip"
 ndkdir="android-ndk-r28b"
 
-mesaver="https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-25.1.0-rc2/mesa-mesa-25.1.0-rc2.zip"
-mesadir="mesa-mesa-25.1.0-rc2"
+mesaver="https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-25.1.1/mesa-mesa-25.1.1.zip"
+mesadir="mesa-mesa-25.1.1"
 
 # Colors for terminal output
 green='\033[0;32m'
@@ -20,7 +20,7 @@ magiskdir="$workdir/turnip_module"
 
 DRIVER_FILE="vulkan.turnip.so"
 META_FILE="meta.json"
-ZIP_FILE="Turnip-25.1.0-EMULATOR.zip"
+ZIP_FILE="Turnip-25.1.1-EMULATOR.zip"
 
 clear
 
@@ -225,8 +225,8 @@ EOF
 cat <<EOF >"module.prop"
 id=turnip-mesa
 name=Freedreno Turnip Vulkan Driver RC builds
-version=v25.1.0
-versionCode=20250425
+version=v25.1.1
+versionCode=20250523
 author=V3KT0R-87
 description=Turnip is an open-source vulkan driver for devices with Adreno 6xx-7xx GPUs.
 updateJson=https://raw.githubusercontent.com/v3kt0r-87/Mesa-Turnip-Builder/refs/heads/stable/update.json
@@ -286,8 +286,8 @@ ui_print ""
 EOF
 
 echo "Packing driver files into Magisk/KSU module ..." $'\n'
-zip -r $workdir/Turnip-25.1.0-MAGISK-KSU.zip * &> /dev/null
-if ! [ -a $workdir/Turnip-25.1.0-MAGISK-KSU.zip ]; then
+zip -r $workdir/Turnip-25.1.1-MAGISK-KSU.zip * &> /dev/null
+if ! [ -a $workdir/Turnip-25.1.1-MAGISK-KSU.zip ]; then
     echo -e "$red-Packing failed!$nocolor" && exit 1
 else
     clear
@@ -304,8 +304,8 @@ else
  cat <<EOF > "$META_FILE"
 {
   "schemaVersion": 1,
-  "name": "Freedreno Turnip Driver v25.1.0 RC2",
-  "description": "Compiled using Android NDK 28",
+  "name": "Freedreno Turnip Driver v25.1.1",
+  "description": "Compiled using Android NDK 28b",
   "author": "v3kt0r-87",
   "packageVersion": "3",
   "vendor": "Mesa3D",
@@ -324,8 +324,8 @@ EOF
     clear
 
     echo -e "$green-All done, you can take your drivers from here;$nocolor" $'\n'
-    echo $workdir/Turnip-25.1.0-MAGISK-KSU.zip $'\n'
-    echo $workdir/Turnip-25.1.0-EMULATOR.zip $'\n'
+    echo $workdir/Turnip-25.1.1-MAGISK-KSU.zip $'\n'
+    echo $workdir/Turnip-25.1.1-EMULATOR.zip $'\n'
     echo -e "$green Build Finished :). $nocolor" $'\n'
 
     # Cleanup 
