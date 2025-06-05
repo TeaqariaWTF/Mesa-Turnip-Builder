@@ -1,6 +1,7 @@
-**May ,23 2025**: Updated Mesa to v25.1.1 Stable  
+**June 6 , 2025**: Updated Mesa to v25.1.2 Stable  
 
 **Requires Android 14 and above to work properly**  
+
 **Android 13 users can still install**
 
 1. Updated Android NDK to 28.0B Stable 
