@@ -1,4 +1,4 @@
-**June 6 , 2025**: Updated Mesa to v25.1.2 Stable  
+**June 9 , 2025**: Updated Mesa to v25.1.3 Stable  
 
 **Requires Android 14 and above to work properly**  
 
