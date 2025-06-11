@@ -1,27 +1,53 @@
 #!/bin/bash -e
 
-# Required packages for building the turnip driver
-deps="meson ninja patchelf unzip curl pip flex bison zip glslang"
-
-# Android NDK and Mesa version
-ndkver="https://dl.google.com/android/repository/android-ndk-r28b-linux.zip"
-ndkdir="android-ndk-r28b"
-
-mesaver="https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-25.1.3/mesa-mesa-25.1.3.zip"
-mesadir="mesa-mesa-25.1.3"
-
-# Colors for terminal output
+# Define colors for terminal output
 green='\033[0;32m'
 red='\033[0;31m'
 nocolor='\033[0m'
 
-workdir="$(pwd)/turnip_workdir"
-magiskdir="$workdir/turnip_module"
+# Define Android NDK version and download URL
+ndkdir="android-ndk-r28b"
+ndkver="https://dl.google.com/android/repository/${ndkdir}-linux.zip"
+sdkver="34"
 
-DRIVER_FILE="vulkan.turnip.so"
-META_FILE="meta.json"
-ZIP_FILE="Turnip-25.1.3-EMULATOR.zip"
+# Define Mesa version and download URL
+mesadir="mesa-mesa-25.1.3"
+mesaver="https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-25.1.3/${mesadir}.zip"
 
+# Define working directories
+workdir="$(pwd)/turnip_workdir"         # Base directory for all operations
+magiskdir="$workdir/turnip_module"      # Directory to create the Magisk module
+
+DRIVER_FILE="vulkan.turnip.so"          # Output Vulkan Driver (emulator)
+META_FILE="meta.json"                   # Metadata
+
+ZIP_FILE_MAGISK="Turnip-25.1.3-MAGISK-KSU.zip"
+ZIP_FILE_EMULATOR="Turnip-25.1.3-EMULATOR.zip" 
+
+# List of required packages to build the Turnip driver
+deps="meson ninja patchelf unzip curl pip flex bison zip glslang"
+clear
+
+echo "Checking system for required dependencies..."
+
+# Check for required dependencies 
+for deps_chk in $deps; do
+
+    sleep 0.5
+    if command -v "$deps_chk" >/dev/null 2>&1; then
+        echo -e "$green - $deps_chk found $nocolor"
+    else
+        echo -e "$red - $deps_chk not found, cannot continue. $nocolor"
+        deps_missing=1
+
+        if [ "$deps_missing" == "1" ]; then
+            echo "Missing dependencies, installing them now..." $'\n'
+            sudo apt install -y meson patchelf unzip curl python3-pip flex bison zip python3-mako glslang-tools vulkan-tools python-is-python3 &> /dev/null
+        fi
+    fi
+done
+
+sleep 1.5
 clear
 
 # Clean work directory if it exists
@@ -30,29 +56,6 @@ if [ -d "$workdir" ]; then
     rm -rf "$workdir"
     sleep 2
 fi
-
-echo "Checking system for required dependencies..."
-
-# Check for required dependencies 
-for deps_chk in $deps; do
-    sleep 0.25
-    if command -v "$deps_chk" >/dev/null 2>&1; then
-        echo -e "$green - $deps_chk found $nocolor"
-    else
-        echo -e "$red - $deps_chk not found, cannot continue. $nocolor"
-        deps_missing=1
-    fi
-done
-
-# Install missing dependencies automatically
-if [ "$deps_missing" == "1" ]; then
-    echo "Missing dependencies, installing them now..." $'\n'
-    sudo apt install -y meson patchelf unzip curl python3-pip flex bison zip python3-mako glslang-tools vulkan-tools python-is-python3 &> /dev/null
-fi
-
-sleep 1.5
-
-clear
 
 echo "Creating and entering the work directory..." $'\n'
 mkdir -p "$workdir" && cd "$_"
@@ -100,11 +103,12 @@ ln -sf "$ndk_bin/clang++" /tmp/fake-cc/c++
 export PATH="/tmp/fake-cc:$ndk_bin:$PATH"
 
 echo "Creating Meson cross file..." $'\n'
+
 cat <<EOF >"android-aarch64.txt"
 [binaries]
 ar = '$ndk_bin/llvm-ar'
-c = ['ccache', '$ndk_bin/aarch64-linux-android33-clang', '-O2']
-cpp = ['ccache', '$ndk_bin/aarch64-linux-android33-clang++', '-O2', '--start-no-unused-arguments', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++', '--end-no-unused-arguments', '-Wno-error=c++11-narrowing']
+c = ['ccache', '$ndk_bin/aarch64-linux-android$sdkver-clang', '-O2']
+cpp = ['ccache', '$ndk_bin/aarch64-linux-android$sdkver-clang++', '-O2', '--start-no-unused-arguments', '-fno-exceptions', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-static-libstdc++', '--end-no-unused-arguments', '-Wno-error=c++11-narrowing']
 c_ld = '$ndk_bin/ld.lld'
 cpp_ld = '$ndk_bin/ld.lld'
 strip = '$ndk_bin/aarch64-linux-android-strip'
@@ -137,7 +141,7 @@ CC=clang CXX=clang++ meson setup build-android-aarch64 \
     --native-file "$workdir/$mesadir/native.txt" \
     -Dbuildtype=release \
     -Dplatforms=android \
-    -Dplatform-sdk-version=33 \
+    -Dplatform-sdk-version="$sdkver" \
     -Dandroid-stub=true \
     -Dgallium-drivers= \
     -Dvulkan-drivers=freedreno \
@@ -226,9 +230,9 @@ EOF
 
 cat <<EOF >"module.prop"
 id=turnip-mesa
-name=Freedreno Turnip Vulkan Driver RC builds
+name=Freedreno Turnip Vulkan Driver STABLE
 version=v25.1.3
-versionCode=20250609
+versionCode=20250611
 author=V3KT0R-87
 description=Turnip is an open-source vulkan driver for devices with Adreno 6xx-7xx GPUs.
 updateJson=https://raw.githubusercontent.com/v3kt0r-87/Mesa-Turnip-Builder/refs/heads/stable/update.json
@@ -251,7 +255,7 @@ ui_print ""
 ui_print "Checking Device info ..."
 sleep 1.25
 
-[ \$(getprop ro.system.build.version.sdk) -lt 33 ] && echo "Android 13 is required! Aborting ..." && abort
+[ \$(getprop ro.system.build.version.sdk) -lt 34 ] && echo "Android 14 is now required! Aborting ..." && abort
 echo ""
 echo "Everything looks fine .... proceeding"
 ui_print ""
@@ -288,9 +292,12 @@ ui_print ""
 EOF
 
 echo "Packing driver files into Magisk/KSU module ..." $'\n'
-zip -r $workdir/Turnip-25.1.3-MAGISK-KSU.zip * &> /dev/null
-if ! [ -a $workdir/Turnip-25.1.3-MAGISK-KSU.zip ]; then
-    echo -e "$red-Packing failed!$nocolor" && exit 1
+
+zip -r "$workdir/$ZIP_FILE_MAGISK" * &> /dev/null
+
+if [[ ! -f "$workdir/$ZIP_FILE_MAGISK" ]]; then
+    echo -e "${red}Error: Zipping driver files failed.${nocolor}"
+    exit 1
 else
     clear
 
@@ -306,35 +313,36 @@ else
  cat <<EOF > "$META_FILE"
 {
   "schemaVersion": 1,
-  "name": "Freedreno Turnip Driver v25.1.3",
+  "name": "Freedreno Turnip Driver STABLE",
   "description": "Compiled using Android NDK 28b",
   "author": "v3kt0r-87",
   "packageVersion": "3",
   "vendor": "Mesa3D",
   "driverVersion": "Vulkan 1.4.311",
-  "minApi": 33,
+  "minApi": 34,
   "libraryName": "vulkan.turnip.so"
 }
 EOF
 
 # Zip the turnip .so file and meta.json file
-    if ! zip "$ZIP_FILE" "$DRIVER_FILE" "$META_FILE" > /dev/null 2>&1; then
-    echo -e "$red Error: Zipping driver files failed. $nocolor"
-    exit 1
+    if ! zip "$workdir/$ZIP_FILE_EMULATOR" "$DRIVER_FILE" "$META_FILE" &> /dev/null; then
+        echo -e "${red}Error: Zipping driver files failed.${nocolor}"
+        exit 1
     fi
 
     clear
 
     echo -e "$green-All done, you can take your drivers from here;$nocolor" $'\n'
-    echo $workdir/Turnip-25.1.3-MAGISK-KSU.zip $'\n'
-    echo $workdir/Turnip-25.1.3-EMULATOR.zip $'\n'
+    echo "$workdir/$ZIP_FILE_MAGISK"
+    echo "$workdir/$ZIP_FILE_EMULATOR"
     echo -e "$green Build Finished :). $nocolor" $'\n'
 
     # Cleanup 
     rm "$DRIVER_FILE" "$META_FILE"
-    
+
     # Clean up fake-cc directory and symbolic links on exit
     rm -rf /tmp/fake-cc/cc
     rm -rf /tmp/fake-cc/c++
     rm -rf /tmp/fake-cc
+    
 fi
