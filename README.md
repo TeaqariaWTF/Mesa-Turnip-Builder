@@ -39,7 +39,7 @@ Check [Notes](//github.com/v3kt0r-87/Mesa-Turnip-Builder?tab=readme-ov-file#note
 
 ### Important : Android 14 (SDK 34) is needed for Full Vulkan 1.4 support
 
-## Please use either Ubuntu 24.04 or any other distro based on it
+## Please use Ubuntu 24.04 or any other distro based on it
 
 **MAKE SURE YOU HAVE A STABLE INTERNET CONNECTION BEFORE PROCEEDING**
 
