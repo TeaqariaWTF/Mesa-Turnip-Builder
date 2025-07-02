@@ -1,5 +1,7 @@
 **June 19 , 2025**: Updated Mesa to v25.1.4 Stable  
 
+**WARNING : Magisk 30 BETA wont load turnip driver , until this gets fixed please use magisk 29 stable**
+
 **Requires Android 14 to install**  
 
 **Android 13 users wont be able to install this build**
