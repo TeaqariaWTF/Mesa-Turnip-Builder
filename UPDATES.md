@@ -1,6 +1,6 @@
 **July 7 , 2025**: Updated Mesa to v25.1.5 Stable  
 
-**WARNING : Magisk 30 BETA wont load turnip driver , until this gets fixed please use magisk 29 stable**
+**WARNING : Magisk 30 BETA and KernelSU might not load turnip driver , if so please PM me on telegram >> @VEKTOR_87**
 
 **Requires Android 14 to install**  
 
