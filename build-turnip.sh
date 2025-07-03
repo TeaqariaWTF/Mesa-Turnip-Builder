@@ -11,8 +11,8 @@ ndkver="https://dl.google.com/android/repository/${ndkdir}-linux.zip"
 sdkver="34"
 
 # Define Mesa version and download URL
-mesadir="mesa-mesa-25.1.4"
-mesaver="https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-25.1.4/${mesadir}.zip"
+mesadir="mesa-mesa-25.1.5"
+mesaver="https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-25.1.5/${mesadir}.zip"
 
 # Define working directories
 workdir="$(pwd)/turnip_workdir"         # Base directory for all operations
@@ -21,8 +21,8 @@ magiskdir="$workdir/turnip_module"      # Directory to create the Magisk module
 DRIVER_FILE="vulkan.turnip.so"          # Output Vulkan Driver (emulator)
 META_FILE="meta.json"                   # Metadata
 
-ZIP_FILE_MAGISK="Turnip-25.1.4-MAGISK-KSU.zip"
-ZIP_FILE_EMULATOR="Turnip-25.1.4-EMULATOR.zip" 
+ZIP_FILE_MAGISK="Turnip-25.1.5-MAGISK-KSU.zip"
+ZIP_FILE_EMULATOR="Turnip-25.1.5-EMULATOR.zip" 
 
 # List of required packages to build the Turnip driver
 deps="meson ninja patchelf unzip curl pip flex bison zip glslang"
@@ -231,8 +231,8 @@ EOF
 cat <<EOF >"module.prop"
 id=turnip-mesa
 name=Freedreno Turnip Vulkan Driver STABLE
-version=v25.1.4
-versionCode=20250619
+version=v25.1.5
+versionCode=20250704
 author=V3KT0R-87
 description=Turnip is an open-source vulkan driver for devices with Adreno 6xx-7xx GPUs.
 updateJson=https://raw.githubusercontent.com/v3kt0r-87/Mesa-Turnip-Builder/refs/heads/stable/update.json
@@ -263,9 +263,8 @@ ui_print "Installing Driver Please Wait ..."
 ui_print ""
 
 sleep 1.25
-set_perm_recursive \$MODPATH/system 0 0 755 u:object_r:system_file:s0
-set_perm_recursive \$MODPATH/system/vendor 0 2000 755 u:object_r:vendor_file:s0
-set_perm \$MODPATH/system/vendor/lib64/hw/vulkan.adreno.so 0 0 0644 u:object_r:same_process_hal_file:s0
+set_perm_recursive \$MODPATH/system 0 0 0755 0644
+set_perm \$MODPATH/system/vendor/lib64/hw/vulkan.adreno.so 0 0 0644
 
 ui_print ""
 ui_print " Cleaning GPU Cache ... Please wait!"
@@ -314,7 +313,7 @@ else
 {
   "schemaVersion": 1,
   "name": "Freedreno Turnip Driver STABLE",
-  "description": "Compiled using Android NDK 28b",
+  "description": "Compiled using Android NDK 29",
   "author": "v3kt0r-87",
   "packageVersion": "3",
   "vendor": "Mesa3D",
@@ -344,5 +343,8 @@ EOF
     rm -rf /tmp/fake-cc/cc
     rm -rf /tmp/fake-cc/c++
     rm -rf /tmp/fake-cc
-    
+
+
+
+
 fi

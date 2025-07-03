@@ -1,4 +1,4 @@
-**June 19 , 2025**: Updated Mesa to v25.1.4 Stable  
+**July 7 , 2025**: Updated Mesa to v25.1.5 Stable  
 
 **WARNING : Magisk 30 BETA wont load turnip driver , until this gets fixed please use magisk 29 stable**
 
