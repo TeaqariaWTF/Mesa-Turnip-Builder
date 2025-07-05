@@ -332,10 +332,10 @@ EOF
 
     clear
 
+    echo -e "$green Build Finished :). $nocolor" $'\n'
     echo -e "$green-All done, you can take your drivers from here;$nocolor" $'\n'
     echo "$workdir/$ZIP_FILE_MAGISK"
     echo "$workdir/$ZIP_FILE_EMULATOR"
-    echo -e "$green Build Finished :). $nocolor" $'\n'
 
     # Cleanup 
     rm "$DRIVER_FILE" "$META_FILE"
