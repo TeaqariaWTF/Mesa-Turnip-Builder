@@ -42,7 +42,7 @@ for deps_chk in $deps; do
 
         if [ "$deps_missing" == "1" ]; then
             echo "Missing dependencies, installing them now..." $'\n'
-            sudo apt install -y meson patchelf unzip curl python3-pip flex bison zip python3-mako glslang-tools vulkan-tools python-is-python3 &> /dev/null
+            sudo apt install -y meson-1.5 patchelf unzip curl python3-pip flex bison zip python3-mako glslang-tools vulkan-tools python-is-python3 &> /dev/null
         fi
     fi
 done
